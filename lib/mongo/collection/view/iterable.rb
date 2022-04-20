@@ -51,6 +51,8 @@ module Mongo
           # Therefore, discard that cursor and start iteration again.
           # The case of the caching cursor not being closed and not having
           # been fully iterated isn't tested - see RUBY-2773.
+          cached_cursor = QueryCache.get(**cache_options)
+
           @cursor = if use_query_cache? && cached_cursor && (
             cached_cursor.fully_iterated? || !cached_cursor.closed?
           )
@@ -127,10 +129,6 @@ module Mongo
               send_initial_query(server, session)
             end
           end
-        end
-
-        def cached_cursor
-          QueryCache.get(**cache_options)
         end
 
         def cache_options
